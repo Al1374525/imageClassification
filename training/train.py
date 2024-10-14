@@ -1,4 +1,5 @@
 import torch
+import torchvision
 import torch.nn as nn
 import torch.optim as optim
 from data_loader import get_loaders
@@ -18,9 +19,10 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 train_loader, test_loader = get_loaders(batch_size)
 
 # Define the model
-model = torchvision.models.resnet18(pretrained=True)
+model = torchvision.models.resnet18(weights=torchvision.models.ResNet18_Weights.DEFAULT)
 num_ftrs = model.fc.in_features
 model.fc = nn.Linear(num_ftrs, 10) # change the last layer to 10
+model.to(device)
 
 #Loss and optimizer function
 criterion = nn.CrossEntropyLoss()
