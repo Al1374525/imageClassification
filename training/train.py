@@ -24,6 +24,10 @@ num_ftrs = model.fc.in_features
 model.fc = nn.Linear(num_ftrs, 10) # change the last layer to 10
 model.to(device)
 
+# -----------Model Optimization -------
+
+
+
 #Loss and optimizer function
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr = learning_rate)
@@ -42,6 +46,11 @@ for epoch in range(num_epochs):
         running_loss += loss.item()
     print(f"Epoch {epoch+1}, 'Loss: {running_loss / len(train_loader)}")
 
+# Quantization
+import torch.quantization
+model.qconfig = torch.quantization.default_qconfig
+torch.quantization.prepare_qat(model, inplace=True)
+
 #Evaulation
 model.eval()
 correct = 0
@@ -53,4 +62,7 @@ with torch.no_grad():
         correct += (predicted == labels).sum().item()
 accuracy = correct / len(test_loader.dataset)
 print(f'Test Accuracy: {accuracy:.4f}')
+
+# Convert to quantized model
+quantized_model = torch.quantization.convert(model)
 
